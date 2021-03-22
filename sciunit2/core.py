@@ -58,3 +58,28 @@ def repeat(pkgdir, orig, newargs):
     else:
         print(output.decode('utf-8'))
         return 0
+
+
+def checkout(pkgdir, orig, newargs):
+    if newargs:
+        if not orig:
+            raise CommandError(
+                "interactive sciunit doesn't react to arguments")
+        with Chdir(pkgdir):
+            with open('cde.log') as f:
+                cd, ls = f
+            os.rename('cde.log', 'cde.log.1')
+            with open('cde.log', 'w') as f:
+                # adds the command in a comment
+                f.write_cmd(orig[:1] + newargs)
+                # dir to cd into for executing the commands
+                f.insert(cd)
+                # commands to execute with new arguments
+                f.insert(ls[:1] + newargs)
+    try:
+        subprocess.check_output(['/bin/sh', 'cde.log'], cwd=pkgdir)
+    except subprocess.CalledProcessError as exc:
+        print(exc.output)
+        return exc.returncode
+    else:
+        return 0
