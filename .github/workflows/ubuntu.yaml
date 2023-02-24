@@ -6,9 +6,25 @@ on:
 
 jobs:
 
+  sciunit-test-ubuntu-22-04-with-tox:
+      runs-on: ubuntu-22.04
+      steps:
+        - uses: actions/checkout@v3
+          with:
+            fetch-depth: 0
+        - name: update-pip
+          run: pip3 install --upgrade pip
+        - name: install-tox
+          run: pip3 install tox
+        - name: test-with-tox
+          run: tox -e py310
+
   sciunit-test-ubuntu-20-04-with-tox:
       runs-on: ubuntu-latest
       container: geotrust/build-essential:ubuntu20.04
+      defaults:
+        run:
+          working-directory: /home
       steps:
         - uses: actions/checkout@v3
           with:

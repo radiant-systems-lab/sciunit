@@ -1,7 +1,7 @@
 nose
 coverage
 mock
-nose-capturestderr
+pynose
 requests-mock
 freezegun
 ddt

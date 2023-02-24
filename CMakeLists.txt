@@ -24,7 +24,7 @@ ExternalProject_Add(
 ExternalProject_Add(
   vvpkg
   GIT_REPOSITORY "https://github.com/depaul-dice/sciunit-dedup"
-  GIT_TAG "7400941"
+  GIT_TAG "1234d4c"
   PATCH_COMMAND ${GIT_EXECUTABLE} apply ${_FILES_DIR}/vv-report-size.patch
   CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
   INSTALL_COMMAND install -s <BINARY_DIR>/demo/vv ${_LIBEXEC_DIR}

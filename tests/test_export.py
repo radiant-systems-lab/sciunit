@@ -10,7 +10,7 @@ import os
 
 class TestExport(testit.LocalCase):
     def test_all(self):
-        py_file = '/home/export_example.py'
+        py_file = 'export_example.py'
         self.create_sample_code(py_file)
         testit.sciunit('create', 'ok')
         testit.sciunit('exec', 'python', py_file)
