@@ -20,26 +20,3 @@ jobs:
         - name: test-with-tox
           run: tox
 
-  sciunit-test-ubuntu-16-04-with-tox:
-      runs-on: ubuntu-latest
-      container: geotrust/build-essential:ubuntu16.04
-      steps:
-        - name: install-https
-          run:  apt-get update && apt install apt-transport-https
-        - name: update-git
-          run:  echo "deb https://ppa.launchpadcontent.net/git-core/ppa/ubuntu xenial main" >> /etc/apt/sources.list
-        - name: install-key
-          run: apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E1DD270288B4E6030699E45FA1715D88E1DF1F24
-        - name: install  
-          run: apt-get update && apt-get install git -y
-        - uses: actions/checkout@v3
-          with:
-            fetch-depth: 0
-        - name: git-config
-          run: git config --global --add safe.directory /__w/sciunit/sciunit
-        - name: update-pip
-          run: pip3 install --upgrade pip
-        - name: install-tox
-          run: pip3 install tox
-        - name: test-with-tox
-          run: tox -e py37
