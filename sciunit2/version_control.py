@@ -43,7 +43,7 @@ class Vvpkg(object):
         _, err = p.communicate()
         if p.returncode == 0:
             self.cleanup(pkgdir)
-            last_line = err.split("\n")[-1]
+            last_line = err.split(b"\n")[-1]
             return int(last_line)
         else:
             raise CommandError('execution %r already exists' % rev
