@@ -24,6 +24,9 @@ class Vvpkg(object):
     # adds a new execution to the de-duplication engine
     def checkin(self, rev, pkgdir, spinner):
         parent, name = os.path.split(os.path.abspath(pkgdir))
+        # Let filesystem settle before trying to tar it up
+        # This avoids "file changed as we read it"
+        os.sync()
         # creates a tar file from dir 'name' in 'parent' dir,
         # writes it to stdout, then commits it to
         # de-duplication engine using 'vv' under the 'rev' eid
@@ -40,7 +43,8 @@ class Vvpkg(object):
         _, err = p.communicate()
         if p.returncode == 0:
             self.cleanup(pkgdir)
-            return int(err)
+            last_line = err.split("\n")[-1]
+            return int(last_line)
         else:
             raise CommandError('execution %r already exists' % rev
                                if self.__found(rev) else err)
