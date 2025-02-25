@@ -7,9 +7,6 @@
 Sciunit
 ----------
 
-**The most updated instructions on installing Sciunit can be found at:**
-**https://sciunit.run/install**
-
 **sciunit** is a command-line tool that answers the call for a
 reusable research object that containerizes and stores applications
 simply and efficiently, facilitates sharing and collaboration, and
