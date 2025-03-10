@@ -12,7 +12,7 @@ import sciunit2.wget
 import os
 import shutil
 import re
-import pipes
+import shlex
 import errno
 from urllib.parse import urlparse
 import urllib.request
@@ -90,14 +90,14 @@ def _create(name, by, overwrite=False):
         ret = by(_dir)
     if not ret:
         raise CommandError('directory %s already exists' %
-                           pipes.quote(location_for(name)))
+                           shlex.quote(location_for(name)))
 
 
 # checks if the given folder exists
 def _delete(name, by):
     if not by(location_for(name)):
         raise CommandError('directory %s does not exists for delete operation' %
-                           pipes.quote(location_for(name)))
+                           shlex.quote(location_for(name)))
 
 
 # opens a sciunit container already created

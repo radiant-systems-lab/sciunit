@@ -2,7 +2,7 @@
 from __future__ import absolute_import
 
 import os
-import pipes
+import shlex
 import tempfile
 import itertools
 import errno
@@ -10,11 +10,11 @@ from glob import glob
 
 
 def quoted_format(fmt, *args):
-    return fmt.format(*map(pipes.quote, args))
+    return fmt.format(*map(shlex.quote, args))
 
 
 def quoted(args):
-    return ' '.join(map(pipes.quote, args))
+    return ' '.join(map(shlex.quote, args))
 
 
 # expands 'ptrn' into a list of filenames in the style of unix glob(3),
