@@ -21,6 +21,16 @@ class RmCommand(AbstractCommand):
     @staticmethod
     def __to_rev(id_):
         return 'e%d' % id_
+    
+    @staticmethod
+    def __to_get_current_missing(ids):
+        
+        ids = [int(i.lstrip('e')) for i in ids]
+        ids.sort()
+        missing_ids = [x for x in range(ids[0], ids[-1] + 1) if x not in ids]
+        
+        return missing_ids
+
 
     @staticmethod
     def __to_id_range(revrange):
@@ -48,15 +58,26 @@ class RmCommand(AbstractCommand):
                 else:
                     arg = args[0]
 
+                ids = [rev for rev, _ in emgr.list()]
+
+                id_bound = self.__to_id_range(arg)
+
+                if ids:
+                    ids = ids + ['e' + str(i) for i in id_bound]+ ['e0']
+                    ids.append('e0')
+                    
+                    repo_to_unlink = [self.__to_rev(i) for i in self.__to_get_current_missing(ids)]
+                    for rev in repo_to_unlink:
+                        repo.unlink(rev)
+                
+                else:
+                    for i in range(1, max(id_bound[0], id_bound[1]) + 1):
+                        repo.unlink(self.__to_rev(i))
+
                 emgr.deletemany(arg)
                 # TODO: see if deletemany could return bounds
                 bounds = self.__to_id_range(arg)
 
-                # for id_b in range(bounds[0], bounds[1]):
-                #     repo.unlink(self.__to_rev(id_b))
-                #
-                # for id_a in bounds:
-                #     repo.unlink(self.__to_rev(id_a))
                 for _id in range(bounds[0], bounds[1]+1):
                     repo.unlink(self.__to_rev(_id))
 
