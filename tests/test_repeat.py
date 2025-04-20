@@ -62,19 +62,29 @@ class TestRepeat(testit.LocalCase):
         with testpath.modified_env({'SHELL': '/bin/true'}):
             assert_is_none(testit.sciunit('exec', '-i'))
 
+        assert_true(not os.path.exists('tmp/ok/e2'))
+        assert_true(os.path.exists('tmp/ok/e1'))
+
         with assert_raises(SystemExit) as r:
             testit.sciunit('repeat', 'e2')
         assert_equal(r.exception.code, 0)
+
+        assert_true(os.path.exists('tmp/ok/e2'))
 
         with assert_raises(SystemExit) as r:
             testit.sciunit('repeat', 'e2', '-l')
         assert_equal(r.exception.code, 1)
 
+        assert_true(not os.path.exists('tmp/ok/e3'))
+       
         assert_is_none(testit.sciunit('commit'))
+        
+        assert_true(not os.path.exists('tmp/ok/e3'))
 
         with assert_raises(SystemExit) as r:
             testit.sciunit('repeat', 'e3')
         assert_equal(r.exception.code, 0)
+        assert_true(os.path.exists('tmp/ok/e3'))
 
         with assert_raises(SystemExit) as r:
             testit.sciunit('repeat', 'e1', '-L')

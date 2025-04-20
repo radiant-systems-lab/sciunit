@@ -4,6 +4,7 @@ from sciunit2.exceptions import CommandError
 from sciunit2.util import Chdir
 from sciunit2.cdelog import open
 import sciunit2.libexec
+import sciunit2.filelock
 
 import os
 import shutil
@@ -43,6 +44,10 @@ def repeat(pkgdir, orig, newargs):
             with open('cde.log') as f:
                 cd, ls = f
             os.rename('cde.log', 'cde.log.1')
+
+            parent_pkgdir = os.path.join(os.path.dirname(os.path.dirname(pkgdir)), 'cde-package')
+            os.makedirs(os.path.join(parent_pkgdir, 'cde.log.1'), exist_ok=True)
+            
             with open('cde.log', 'w') as f:
                 # adds the command in a comment
                 f.write_cmd(orig[:1] + newargs)
@@ -50,6 +55,12 @@ def repeat(pkgdir, orig, newargs):
                 f.insert(cd)
                 # commands to execute with new arguments
                 f.insert(ls[:1] + newargs)
+
+        # this will cause issues if parallel repeat is run. 
+        # Question: Which execution-id to commit in case of sciunit commit after parallel repeat
+        shutil.copy(os.path.join(pkgdir,'cde.log.1'), os.path.join(parent_pkgdir, 'cde.log.1'))
+        shutil.copy(os.path.join(pkgdir,'cde.log'), os.path.join(parent_pkgdir, 'cde.log'))
+
     try:
         output = subprocess.check_output(['/bin/sh', 'cde.log'], cwd=pkgdir)
     except subprocess.CalledProcessError as exc:
