@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 
 from sciunit2.command import AbstractCommand
-from sciunit2.command.context import CheckoutContext
+from sciunit2.command.context import CheckoutContext_Parallel
 from sciunit2.exceptions import CommandLineError
 import sciunit2.core
 
@@ -21,5 +21,5 @@ class RepeatCommand(AbstractCommand):
         optlist, args = getopt(args, '')
         if not args:
             raise CommandLineError
-        with CheckoutContext(args[0]) as (pkgdir, orig):
+        with CheckoutContext_Parallel(args[0]) as (pkgdir, orig):
             sys.exit(sciunit2.core.repeat(pkgdir, orig, args[1:]))

@@ -60,6 +60,21 @@ class Vvpkg(object):
             raise CommandError('execution %r not found' % rev
                                if not self.__found(rev) else err)
 
+    # brings out the execution identified by 'rev'
+    # from the de-duplication engine
+    def checkout_Parallel(self, rev):
+        rev_repo = os.path.join(self.location, rev)
+        self._mkdir_p(rev_repo)
+        self.cleanup(os.path.join(rev_repo, 'cde-package'))
+        cmd = quoted_format('{0} checkout {1} - | tar xf - -C {2}',
+                            sciunit2.libexec.vv.which, rev, rev_repo)
+        p = subprocess.Popen(cmd, shell=True, cwd=self.location, stderr=PIPE)
+        _, err = p.communicate()
+        print("hi in checkout parallel"+cmd)
+        if p.wait() != 0:
+            raise CommandError('execution %r not found' % rev
+                               if not self.__found(rev) else err)
+
     def checkout_Diff(self, rev):
         cmd = quoted_format('{0} checkout {1} - | tar xf -',
                             sciunit2.libexec.vv.which, rev)

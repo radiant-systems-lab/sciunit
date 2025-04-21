@@ -18,6 +18,18 @@ def CheckoutContext(rev):
         repo.checkout(rev)
         yield pkgdir, orig
 
+# returns the pkgdir and original command used
+# to execute execution 'rev'
+@contextmanager
+def CheckoutContext_Parallel(rev):
+    emgr, repo = sciunit2.workspace.current()
+    with emgr.exclusive():
+        orig = emgr.get(rev).cmd
+        pkgdir = os.path.join(repo.location,rev,'cde-package')
+        repo.cleanup(pkgdir)
+        repo.checkout_Parallel(rev)
+        yield pkgdir, orig
+
 
 @contextmanager
 def CheckoutContext_Diff(rev):
