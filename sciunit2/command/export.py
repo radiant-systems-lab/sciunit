@@ -26,10 +26,13 @@ def python_paths(log_file, cde_root_dir):
     3. python version
     """
     with open(log_file) as f:
+        print(log_file)
+        print(cde_root_dir)
         line = f.readline()
         found = False
         pkg_dir_lines = []
         while line:
+            print(line)
             line = line.strip()
             # reading python executable path from the
             # first line after comments in the log file

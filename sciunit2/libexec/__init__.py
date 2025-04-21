@@ -19,8 +19,8 @@ class Process(object):
     def which(self):
         return pathfor(self.name)
 
-    def __call__(self, args, **kwargs):
-        return subprocess.Popen([self.which] + args, **kwargs)
+    def __call__(self, args,cwd=None, **kwargs):
+        return subprocess.Popen([self.which] + args,cwd=cwd, **kwargs)
 
 
 ptu = Process('ptu')

@@ -62,6 +62,7 @@ def err2(msg1, msg2):
 
 
 def main():
+    print("debug_log")
     try:
         _main(sys.argv[1:])
     except CommandLineError:

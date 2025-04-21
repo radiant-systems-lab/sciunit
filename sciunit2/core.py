@@ -11,10 +11,10 @@ import subprocess
 
 
 # capture the execution of commands from cde.log
-def capture(args):
-    sciunit2.libexec.ptu(args).wait()
-    assert os.path.isdir('cde-package')
-    with open('cde-package/cde.log', 'r+') as f:
+def capture(args, cwd = None):
+    sciunit2.libexec.ptu(args,cwd=cwd).wait()
+    assert os.path.isdir(os.path.join(cwd,'cde-package'))
+    with open(os.path.join(cwd,'cde-package/cde.log'), 'r+') as f:
         f.prepend_cmd(args)
 
 

@@ -6,6 +6,8 @@ from sciunit2.exceptions import CommandLineError
 from sciunit2.util import path_injection_for
 import sciunit2.core
 import sciunit2.workspace
+import os
+import threading
 
 from getopt import getopt
 from pkg_resources import resource_filename
@@ -27,10 +29,20 @@ class ExecCommand(CommitMixin, AbstractCommand):
             raise CommandLineError
         emgr, repo = sciunit2.workspace.current()
         with emgr.exclusive():
-            rev = emgr.add(args)
             if optlist:
+                rev = emgr.add(args)
                 standin_fn = resource_filename(__name__, 'sciunit')
                 sciunit2.core.shell(env=path_injection_for(standin_fn))
+                results = self.do_commit('cde-package', rev, emgr, repo)
             else:
-                sciunit2.core.capture(args)
-            return self.do_commit('cde-package', rev, emgr, repo)
+                # make a new directory for the execution
+                thread_id = threading.current_thread().ident
+                directory_name = f"thread_{thread_id}"
+                os.makedirs(directory_name, exist_ok=True)
+
+                sciunit2.core.capture(args,cwd =directory_name)
+                results = self.do_commit_parallel(os.path.join(directory_name,'cde-package'), emgr, repo,args)
+
+                os.rmdir(directory_name)
+
+            return results
