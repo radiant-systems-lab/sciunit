@@ -1,11 +1,9 @@
 from __future__ import absolute_import
 
-import distutils
+import shutil
 import os
 import sys
-from distutils.dir_util import create_tree, copy_tree
 from distutils.errors import DistutilsFileError
-from distutils.file_util import copy_file
 from getopt import getopt
 
 import sciunit2.core
@@ -44,25 +42,28 @@ class GivenCommand(CommitMixin, AbstractCommand):
         with CheckoutContext(args[0]) as (pkgdir, orig):
             try:
                 de = DetachedExecution(pkgdir)
+                # prevents copying files in copytree()
+                def _ignore(dir, files):
+                    return [f for f in files if os.path.isfile(os.path.join(dir, f))]
                 if os.path.isabs(files[0]):
                     dst = de.root_on_host()  # project_dir/cde-package/cde-root
-                    create_tree(dst, [os.path.relpath(p, '/') for p in files])
+                    for p in files:
+                        shutil.copytree(os.path.relpath(p, '/'), dst, ignore=_ignore)
                     join_fn = str.__add__
                 else:
                     dst = de.cwd_on_host()  # project dir inside ./cde-root/root/home
-                    create_tree(dst, files)
+                    for p in files:
+                        shutil.copytree(p, dst, ignore=_ignore)
                     join_fn = os.path.join
 
                 for fn in files:
                     target = join_fn(dst, fn)
                     if os.path.isdir(fn):
-                        copy_tree(fn, target)
+                        shutil.copytree(fn, target, dirs_exist_ok=True)
                     else:
-                        copy_file(fn, target)
-                distutils.dir_util._path_created.clear()
-                # maybe use shutil.rmtree
+                        shutil.copyfile(fn, target)
 
-            except DistutilsFileError as e:
+            except shutil.Error as e:
                 raise CommandError(e)
             else:
                 repeat_out = sciunit2.core.repeat(pkgdir, orig, args[1:])
