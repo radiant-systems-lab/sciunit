@@ -9,6 +9,7 @@ from pathlib import Path
 import sciunit2.cli
 import sciunit2.workspace
 
+
 class LocalCase(unittest.TestCase):
     def setUp(self):
         self.workspace_patch = mock.patch(
@@ -25,9 +26,10 @@ def sciunit(*args):
     with mock.patch('sys.argv', ['x'] + list(args)):
         sciunit2.cli.main()
 
+
 def touch(_path):
     Path(_path).touch()
 
+
 def mkdir(_path):
     Path(_path).mkdir(parents=True)
-
