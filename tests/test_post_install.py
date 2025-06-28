@@ -2,12 +2,14 @@ from __future__ import absolute_import
 
 from nose.tools import *
 import os
+import io
 from unittest import mock
 import ddt
 import pwd
 import re
 
 from tests import testit
+from contextlib import redirect_stdout
 
 
 @ddt.ddt
@@ -27,7 +29,7 @@ class TestGiven(testit.LocalCase):
                 testit.sciunit('post-install', '-x')
             assert_equal(r.exception.code, 2)
 
-            with testit.CaptureOutput() as out:
+            with redirect_stdout(io.StringIO()) as out:
                 testit.sciunit('post-install')
 
             if not out.getvalue():
@@ -42,7 +44,7 @@ class TestGiven(testit.LocalCase):
             with open(p) as fp:
                 content = fp.read()
 
-            with testit.CaptureOutput() as out:
+            with redirect_stdout(io.StringIO()) as out:
                 testit.sciunit('post-install')
 
             with open(p) as fp:
@@ -55,7 +57,7 @@ class TestGiven(testit.LocalCase):
                 fp.write(content)
                 fp.write(b)
 
-            with testit.CaptureOutput() as out:
+            with redirect_stdout(io.StringIO()) as out:
                 testit.sciunit('post-install')
 
             with open(p) as fp:
@@ -64,7 +66,7 @@ class TestGiven(testit.LocalCase):
             os.unlink(p)
             os.mkdir(p)
 
-            with testit.CaptureOutput() as out:
+            with redirect_stdout(io.StringIO()) as out:
                 testit.sciunit('post-install')
 
             patch_tilde.stop()
