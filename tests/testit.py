@@ -28,8 +28,11 @@ def sciunit(*args):
 
 
 def touch(_path):
+    dirs = _path.rsplit("/", 1)[0]
+    if len(dirs) > 0:
+        mkdir(dirs)
     Path(_path).touch()
 
 
 def mkdir(_path):
-    Path(_path).mkdir(parents=True)
+    Path(_path).mkdir(parents=True, exist_ok=True)
