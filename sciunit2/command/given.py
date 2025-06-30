@@ -42,18 +42,15 @@ class GivenCommand(CommitMixin, AbstractCommand):
         with CheckoutContext(args[0]) as (pkgdir, orig):
             try:
                 de = DetachedExecution(pkgdir)
-                # prevents copying files in copytree()
-                def _ignore(dir, files):
-                    return [f for f in files if os.path.isfile(os.path.join(dir, f))]
                 if os.path.isabs(files[0]):
                     dst = de.root_on_host()  # project_dir/cde-package/cde-root
-                    for p in files:
-                        shutil.copytree(os.path.relpath(p, '/'), dst, ignore=_ignore)
+                    for f in files:
+                        copytree(os.path.relpath(f, '/'), dst)
                     join_fn = str.__add__
                 else:
                     dst = de.cwd_on_host()  # project dir inside ./cde-root/root/home
-                    for p in files:
-                        shutil.copytree(p, dst, ignore=_ignore)
+                    for f in files:
+                        copytree(f, dst)
                     join_fn = os.path.join
 
                 for fn in files:
@@ -75,3 +72,10 @@ class GivenCommand(CommitMixin, AbstractCommand):
             rev = emgr.add(args[1:])
             self.do_commit(pkgdir, rev, emgr, repo)
             return sys.exit(repeat_out)
+
+def copytree(src, dst):
+    if not os.path.isdir(src):
+        path = src.rsplit("/", 1)[0]
+    else:
+        path = src
+    os.makedirs(dst+"/"+path, exist_ok=True)
