@@ -57,11 +57,11 @@ class TestGiven(testit.LocalCase):
 
         with assert_raises(SystemExit) as r:
             testit.sciunit('given', 'tmp/file2',
-                           'repeat', 'e2', 'tmp/d/file3', '%')
+                           'repeat', 'e10', 'tmp/d/file3', '%')
         assert_equal(r.exception.code, 1)
 
         with assert_raises(SystemExit) as r:
-            testit.sciunit('given', '/dev/stdin', 'repeat', 'e2', '%')
+            testit.sciunit('given', '/dev/stdin', 'repeat', 'e10', '%')
         assert_equal(r.exception.code, 1)
 
         with assert_raises(SystemExit) as r:
