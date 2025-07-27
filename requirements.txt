@@ -10,3 +10,4 @@ hs_restclient
 contextlib2
 tqdm>=4.17.1
 backports.tempfile
+boto3
