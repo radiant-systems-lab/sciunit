@@ -4,7 +4,7 @@ from sciunit2.command import AbstractCommand
 from sciunit2.exceptions import CommandLineError
 import sciunit2.workspace
 import sciunit2.archiver
-import sciunit2.ephemeral
+import sciunit2.s3
 from sciunit2.util import quoted_format
 
 from getopt import getopt
@@ -29,7 +29,7 @@ class CopyCommand(AbstractCommand):
             if optlist:
                 print(fn)
             else:
-                print(sciunit2.ephemeral.live(fn))
+                print(sciunit2.s3.live(fn))
 
     def note(self, user_data):
         return quoted_format('Copied sciunit at {0}\n', user_data)
