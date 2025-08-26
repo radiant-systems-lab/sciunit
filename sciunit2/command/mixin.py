@@ -17,11 +17,13 @@ class CommitMixin(object):
             # adds the execution to de-duplication engine
             sz = repo.checkin(rev, pkgdir, sp)
         # adds the execution to the database
-        return (repo.location,) + emgr.commit(sz)
+        commit = emgr.commit(sz)
+        last_id = emgr.get_last_id()
+        return (last_id, repo,) + commit
 
     def note(self, aList):
-        return "\n[%s %s] %s\n Date: %s\n" % (
-            sciunit2.workspace.project(aList[0]),
-            aList[1],
-            quoted(aList[2].cmd),
-            timestamp.fmt_rfc2822(aList[2].started))
+        return "\n[%s e%s] %s\n Date: %s\n" % (
+            sciunit2.workspace.project(aList[1].location),
+            aList[0],
+            quoted(aList[3].cmd),
+            timestamp.fmt_rfc2822(aList[3].started))
