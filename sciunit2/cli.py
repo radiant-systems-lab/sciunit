@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 
 from sciunit2.exceptions import CommandLineError, CommandError
 from sciunit2.command.create import CreateCommand

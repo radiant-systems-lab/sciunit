@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 
 from utcdatetime import utcdatetime
 from datetime import datetime as _datetime

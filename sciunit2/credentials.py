@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 
 from sciunit2.config import Config
 import sciunit2.workspace

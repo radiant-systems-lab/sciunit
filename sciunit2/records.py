@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 
 from sciunit2.exceptions import CommandError, MalformedExecutionId
 from sciunit2 import timestamp
