@@ -1,11 +1,9 @@
 from __future__ import absolute_import
 
-import distutils
+import shutil
 import os
 import sys
-from distutils.dir_util import create_tree, copy_tree
 from distutils.errors import DistutilsFileError
-from distutils.file_util import copy_file
 from getopt import getopt
 
 import sciunit2.core
@@ -46,23 +44,23 @@ class GivenCommand(CommitMixin, AbstractCommand):
                 de = DetachedExecution(pkgdir)
                 if os.path.isabs(files[0]):
                     dst = de.root_on_host()  # project_dir/cde-package/cde-root
-                    create_tree(dst, [os.path.relpath(p, '/') for p in files])
+                    for f in files:
+                        copytree(os.path.relpath(f, '/'), dst)
                     join_fn = str.__add__
                 else:
                     dst = de.cwd_on_host()  # project dir inside ./cde-root/root/home
-                    create_tree(dst, files)
+                    for f in files:
+                        copytree(f, dst)
                     join_fn = os.path.join
 
                 for fn in files:
                     target = join_fn(dst, fn)
                     if os.path.isdir(fn):
-                        copy_tree(fn, target)
+                        shutil.copytree(fn, target, dirs_exist_ok=True)
                     else:
-                        copy_file(fn, target)
-                distutils.dir_util._path_created.clear()
-                # maybe use shutil.rmtree
+                        shutil.copyfile(fn, target)
 
-            except DistutilsFileError as e:
+            except shutil.Error as e:
                 raise CommandError(e)
             else:
                 repeat_out = sciunit2.core.repeat(pkgdir, orig, args[1:])
@@ -74,3 +72,10 @@ class GivenCommand(CommitMixin, AbstractCommand):
             rev = emgr.add(args[1:])
             self.do_commit(pkgdir, rev, emgr, repo)
             return sys.exit(repeat_out)
+
+def copytree(src, dst):
+    if not os.path.isdir(src):
+        path = src.rsplit("/", 1)[0]
+    else:
+        path = src
+    os.makedirs(dst+"/"+path, exist_ok=True)
