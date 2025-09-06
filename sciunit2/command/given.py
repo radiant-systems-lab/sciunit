@@ -48,7 +48,8 @@ class GivenCommand(CommitMixin, AbstractCommand):
                         copytree(os.path.relpath(f, '/'), dst)
                     join_fn = str.__add__
                 else:
-                    dst = de.cwd_on_host()  # project dir inside ./cde-root/root/home
+                    # project dir inside ./cde-root/root/home
+                    dst = de.cwd_on_host()
                     for f in files:
                         copytree(f, dst)
                     join_fn = os.path.join
@@ -73,9 +74,10 @@ class GivenCommand(CommitMixin, AbstractCommand):
             self.do_commit(pkgdir, rev, emgr, repo)
             return sys.exit(repeat_out)
 
+
 def copytree(src, dst):
     if not os.path.isdir(src):
         path = src.rsplit("/", 1)[0]
     else:
         path = src
-    os.makedirs(dst+"/"+path, exist_ok=True)
+    os.makedirs(dst + "/" + path, exist_ok=True)

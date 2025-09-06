@@ -80,7 +80,7 @@ def main():
 
 
 def _main(args):
-    if platform.system().startswith('Linux') == False:
+    if not platform.system().startswith('Linux'):
         err1('Platform is not supported')
         sys.exit(1)
 
