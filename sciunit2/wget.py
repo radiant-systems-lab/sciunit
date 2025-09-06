@@ -22,6 +22,6 @@ class ThrowOnErrorOpener(urllib.request.FancyURLopener):
 
 def fetch(url, base):
     with tempfile.NamedTemporaryFile(prefix=base, dir='') as fp, \
-         TqdmHook(unit='B', unit_scale=True, miniters=1) as t:
+            TqdmHook(unit='B', unit_scale=True, miniters=1) as t:
         ThrowOnErrorOpener().retrieve(url, fp.name, t.update_to)
         return open(fp.name, 'rb')
