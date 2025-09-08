@@ -11,8 +11,8 @@ from sciunit2.command import AbstractCommand
 from sciunit2.command.context import CheckoutContext
 from sciunit2.exceptions import CommandLineError, MalformedExecutionId
 from sciunit2.util import quoted_format
-from sciunit2.workspace import _mkdir_p
-from sciunit2.workspace import at
+from sciunit2.workspace import _mkdir_p, at
+import sciunit2.workspace
 
 from getopt import getopt
 
@@ -191,8 +191,16 @@ class ExportCommand(AbstractCommand):
     def run(self, args):
         optlist, args = getopt(args, '')
         if len(args) < 1:
-            raise CommandLineError
-        eid = args[0]
+            try:
+                emgr, repo = sciunit2.workspace.current()
+                last_id = emgr.get_last_id()
+                eid = f'e{last_id}'
+                print(f'Exporting requirements.txt for {eid}')
+            except Exception as ex:
+                raise CommandLineError()
+
+        else:
+            eid = args[0]
         # check if eid is of the form en
         # i.e., a valid execution id format
         if not re.match(r'^e[1-9]\d*$', eid):
