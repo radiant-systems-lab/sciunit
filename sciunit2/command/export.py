@@ -117,7 +117,8 @@ def find_pkg_list(site_package_dirs):
                 for (dirpath, dirnames, filenames) in os.walk(package_path):
                     version_file = None
                     version = None
-                    version_file_list = list(filter(lambda file: 'version' in file, filenames))
+                    version_file_list = list(
+                        filter(lambda file: 'version' in file, filenames))
                     if version_file_list:
                         version_file = version_file_list[0]
                     else:
@@ -129,12 +130,15 @@ def find_pkg_list(site_package_dirs):
                         with open(os.path.join(dirpath, version_file)) as f:
                             lines = f.readlines()
                             for line in lines:
-                                version_line_list = re.findall(r'^_*version_*\s*=', line)
+                                version_line_list = re.findall(
+                                    r'^_*version_*\s*=', line)
                                 if version_line_list:
                                     version_split = line.split('=')
-                                    if version_split and len(version_split) >= 2:
+                                    if version_split and len(
+                                            version_split) >= 2:
                                         version = version_split[1].strip()
-                                        version = version.strip('"').strip('\'')
+                                        version = version.strip(
+                                            '"').strip('\'')
                                         version = str(version)
                                         # confirm its a number
                                         if not version[:1].isdigit():
@@ -184,7 +188,8 @@ class ExportCommand(AbstractCommand):
     @property
     def usage(self):
         return [('export <execution id> [virtualenv]',
-                 'Exports the dependencies of <execution id> into requirements.txt.\n'
+                 'Exports the dependencies of <execution id>'
+                 ' into requirements.txt.\n'
                  'Optionally creates new virtualenv instance and '
                  'installs all python dependencies in it.\n')]
 
@@ -221,7 +226,8 @@ class ExportCommand(AbstractCommand):
             log_file = "provenance.cde-root.1.log"
             log_file_path = cde_pkg_dir + "/" + log_file
             cde_root_dir = cde_pkg_dir + "/cde-root"
-            site_pkg_dirs, python_path, py_version = python_paths(log_file_path, cde_root_dir)
+            site_pkg_dirs, python_path, py_version = python_paths(
+                log_file_path, cde_root_dir)
             if not site_pkg_dirs:
                 print('Aborting export! Environment paths not found')
                 return None
@@ -233,55 +239,84 @@ class ExportCommand(AbstractCommand):
                 pkg_str = write_req_file(py_version, pkg_list, req_file)
                 if create_venv:
                     retcode = 0
-                    # 1. install virtualenv using pip(assuming pip is installed)
+                    # 1. install virtualenv using pip(assuming pip is
+                    # installed)
                     try:
-                        retcode ^= subprocess.call(sys.executable + ' -m pip install' +
-                                                   ' --force-reinstall' +
-                                                   ' virtualenv &>' + output_log,
-                                                   shell=True, executable='/bin/bash')
+                        retcode ^= subprocess.call(
+                            sys.executable +
+                            ' -m pip install' +
+                            ' --force-reinstall' +
+                            ' virtualenv &>' +
+                            output_log,
+                            shell=True,
+                            executable='/bin/bash')
                     except CalledProcessError as err:
                         print(err.stderr)
                         print('Aborting export! Error installing virtualenv')
-                        print('Detailed output log can be found in: ' + output_log)
+                        print(
+                            'Detailed output log can be found in: ' +
+                            output_log)
                         return None
                     if retcode != 0:
                         print('Aborting export! Error installing virtualenv')
-                        print('Detailed output log can be found in: ' + output_log)
+                        print(
+                            'Detailed output log can be found in: ' +
+                            output_log)
                         return None
 
                     # 2. create new environment using virtualenv and
                     # install all Python dependencies in it
                     print('Creating new virtual environment...')
-                    retcode ^= subprocess.call('`which virtualenv` ' + env_name
-                                               + ' &>>' + output_log, shell=True, executable='/bin/bash')
+                    retcode ^= subprocess.call(
+                        '`which virtualenv` ' +
+                        env_name +
+                        ' &>>' +
+                        output_log,
+                        shell=True,
+                        executable='/bin/bash')
                     if retcode == 0:
                         print('Installing Python packages...')
                         env_python_path = env_name + '/bin/python'
                         for pkg in tqdm(pkg_str.splitlines()):
-                            cmd = env_python_path + ' -m pip install ' + pkg + ' &>> ' + output_log
-                            subprocess.call(cmd, shell=True, executable='/bin/bash')
+                            cmd = env_python_path + ' -m pip install ' + \
+                                  pkg + ' &>> ' + output_log
+                            subprocess.call(
+                                cmd, shell=True, executable='/bin/bash')
                     else:
                         print('Aborting export! Error installing dependencies')
-                        print('Detailed output log can be found in: ' + output_log)
+                        print(
+                            'Detailed output log can be found in: ' +
+                            output_log)
                         return None
                     if retcode != 0:
                         print('Aborting export!')
-                        print('Detailed output log can be found in: ' + output_log)
+                        print(
+                            'Detailed output log can be found in: ' +
+                            output_log)
                         return None
 
                     # 3. create new folder in cwd and bring all code+data
                     # in /home/<user> there
                     _mkdir_p(data_dir)
-                    subprocess.call('cp -r ' + user_dir + ' ' + data_dir, shell=True)
-                    print("A new virtual environment '" + env_name + "' successfully " +
-                          "created with your Python packages.\n"
-                          "Detailed output log can be found in: " + output_log)
-                    print('You can activate the virtual environment as follows:\n'
-                          '\tsource ' + env_name + '/bin/activate')
+                    subprocess.call(
+                        'cp -r ' + user_dir + ' ' + data_dir, shell=True)
+                    print(
+                        "A new virtual environment '" +
+                        env_name +
+                        "' successfully " +
+                        "created with your Python packages.\n"
+                        "Detailed output log can be found in: " +
+                        output_log)
+                    print(
+                        'You can activate the virtual '
+                        'environment as follows:\n'
+                        '\tsource ' + env_name + '/bin/activate')
                     print('Your code and data have been copied to the dir: '
                           + data_dir + '\n')
                     print('To deactivate the environment, enter: deactivate')
-                    print('Make sure to run the following command from your shell once:')
+                    print(
+                        'Make sure to run the following '
+                        'command from your shell once:')
                     print('\texport SSL_CERT_DIR=/etc/ssl/certs/')
             else:
                 print('Export not successful!')
@@ -291,4 +326,5 @@ class ExportCommand(AbstractCommand):
         return eid
 
     def note(self, eid):
-        return quoted_format('Exported python dependencies of execution {0} \n', eid)
+        return quoted_format(
+            'Exported python dependencies of execution {0} \n', eid)

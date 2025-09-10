@@ -96,8 +96,10 @@ def _create(name, by, overwrite=False):
 # checks if the given folder exists
 def _delete(name, by):
     if not by(location_for(name)):
-        raise CommandError('directory %s does not exists for delete operation' %
-                           shlex.quote(location_for(name)))
+        raise CommandError(
+            'directory %s does not exists for delete operation' %
+            shlex.quote(
+                location_for(name)))
 
 
 # opens a sciunit container already created

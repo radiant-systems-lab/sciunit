@@ -29,7 +29,8 @@ class TestCopy(testit.LocalCase):
             testit.sciunit('open', 'nonexistent#')
         assert_equal(r.exception.code, 1)
 
-        # these test cases need revision because copy functionality is depdendent on file.io which
+        # these test cases need revision because copy functionality
+        # is depdendent on file.io which
         # has been changed to limewire. We need a new service.
         # out = StringIO()
         # with mock.patch('sys.stdout', out):
