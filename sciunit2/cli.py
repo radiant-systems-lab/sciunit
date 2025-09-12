@@ -30,7 +30,7 @@ import platform
 __cmds__ = [CreateCommand, OpenCommand, ExecCommand, RepeatCommand,
             ListCommand, ShowCommand, GivenCommand, CommitCommand, RmCommand,
             SortCommand, PushCommand, CopyCommand, PostInstallCommand,
-            DiffCommand, RemoveCommand, ExportCommand]
+            DiffCommand, RemoveCommand, ExportCommand, CheckoutCommand]
 
 
 def short_usage(out):
