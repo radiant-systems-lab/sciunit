@@ -131,7 +131,7 @@ class ExecutionManager(object):
         v.size = size
         # self.__f[k] = str(v)
         script = "insert into revs (data) values (?)"
-        self.__c.execute(script, [v])
+        self.__c.execute(script, [str(v)])
         self.__f.commit()
 
         return self.__to_rev(k), v
