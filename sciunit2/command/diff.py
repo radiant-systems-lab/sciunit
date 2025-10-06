@@ -30,13 +30,20 @@ class DiffCommand(AbstractCommand):
         # exclusive performs a lock on the berkeleydb instance
         with emgr.exclusive():
             orig1 = emgr.get(args[0]).cmd
-            diffdir = os.path.join(repo.location, 'Diff')  # repo.location is the project dir
+            # repo.location is the project dir
+            diffdir = os.path.join(repo.location, 'Diff')
             repo.checkout_Diff(args[0])
             orig2 = emgr.get(args[1]).cmd
             repo.checkout_Diff(args[1])
 
-            cmd = quoted_format('rsync -nai --delete {0}/ {1}/', args[0], args[1])
-            p = subprocess.Popen(cmd, shell=True, cwd=diffdir, stderr=PIPE, stdout=PIPE)
+            cmd = quoted_format(
+                'rsync -nai --delete {0}/ {1}/', args[0], args[1])
+            p = subprocess.Popen(
+                cmd,
+                shell=True,
+                cwd=diffdir,
+                stderr=PIPE,
+                stdout=PIPE)
             out, err = p.communicate()
             p_return_code = p.wait()
             if p_return_code != 0:
@@ -49,9 +56,12 @@ class DiffCommand(AbstractCommand):
                 output = "Difference in e1 and e2:\n" + \
                          "Files only in e1:\n" + '\n'.join(new_e1) + "\n\n" + \
                          "Files only in e2:\n" + '\n'.join(new_e2) + "\n\n" + \
-                         "Files with changed size:\n" + '\n'.join(size_changed) + "\n\n" + \
-                         "Files with changed modified time:\n" + '\n'.join(time_changed) + "\n\n" + \
-                         "Files with changed permissions:\n" + '\n'.join(perms_changed) + "\n\n"
+                         "Files with changed size:\n" + \
+                         '\n'.join(size_changed) + "\n\n" + \
+                         "Files with changed modified time:\n" + \
+                         '\n'.join(time_changed) + "\n\n" + \
+                         "Files with changed permissions:\n" + \
+                         '\n'.join(perms_changed) + "\n\n"
             except Exception:
                 output = "error executing diff command!"
 
@@ -67,7 +77,7 @@ class DiffCommand(AbstractCommand):
      Files with changed permissions:
 
     Detail on output format of rsync could be found at:
-     https://linux.die.net/man/1/rsync 
+     https://linux.die.net/man/1/rsync
     """
     @staticmethod
     def parse_rsync(out):
@@ -81,7 +91,7 @@ class DiffCommand(AbstractCommand):
         perms_changed = []
         for line in lines:
             splits = line.split()
-            # The length of splits is two for regular files and directories 
+            # The length of splits is two for regular files and directories
             # and 4 for symlinks
 #            assert len(splits) == 2
             YXcstpoguax = splits[0].strip()
@@ -114,7 +124,7 @@ class DiffCommand(AbstractCommand):
                         time_changed.append(file_name)
                     if file_perms == 'p':     # permissions of file changed
                         perms_changed.append(file_name)
-            else:                       # rest of the cases not handled right now
+            else:       # rest of the cases not handled right now
                 continue
 
         return new_e1, new_e2, size_changed, time_changed, perms_changed

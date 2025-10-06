@@ -46,9 +46,9 @@ def test_layout():
         f.write('tmp/test/a.txt', 'test/2nd/a.txt')
 
     assert_true(sciunit2.archiver.extract(
-            p,
-            lambda x: True,
-            lambda x: os.path.join('tmp', x))
+        p,
+        lambda x: True,
+        lambda x: os.path.join('tmp', x))
         .startswith(os.path.join('tmp', 'test__')))
 
     with zipfile.ZipFile(p, 'a') as f:

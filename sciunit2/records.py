@@ -115,7 +115,7 @@ class ExecutionManager(object):
         try:
             last_row_id = self.__c.execute(script).fetchone()[0]
 
-            if last_row_id != None:
+            if last_row_id is not None:
                 last_id = last_row_id + 1
 
         except Error as e:
@@ -140,7 +140,7 @@ class ExecutionManager(object):
         script = "select max(id) from revs"
         last_row_id = self.__c.execute(script).fetchone()[0]
 
-        if last_row_id != None:
+        if last_row_id is not None:
             return last_row_id
         else:
             return 1
@@ -160,7 +160,7 @@ class ExecutionManager(object):
 
         row = self.__c.execute(script, [i]).fetchone()
 
-        if row != None:
+        if row is not None:
             return row[1]
         else:
             raise CommandError('execution %r not found' % self.__to_rev(i))
@@ -221,7 +221,7 @@ class ExecutionManager(object):
         # for idb in range(bounds[0], bounds[1]):
         #     self.delete_id(idb)
 
-        for _id in range(bounds[0], bounds[1]+1):
+        for _id in range(bounds[0], bounds[1] + 1):
             self.delete_id(_id)
 
     def sort(self, revls):
@@ -291,7 +291,6 @@ class ExecutionManager(object):
 
         # todo
         pass
-
 
     @staticmethod
     def __to_rev(id_):

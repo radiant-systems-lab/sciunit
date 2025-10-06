@@ -56,7 +56,7 @@ class RmCommand(AbstractCommand):
                 #
                 # for id_a in bounds:
                 #     repo.unlink(self.__to_rev(id_a))
-                for _id in range(bounds[0], bounds[1]+1):
+                for _id in range(bounds[0], bounds[1] + 1):
                     repo.unlink(self.__to_rev(_id))
 
             except MalformedExecutionId:
