@@ -10,3 +10,4 @@ hs_restclient
 contextlib2
 tqdm
 backports.tempfile
+boto3
