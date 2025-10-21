@@ -6,6 +6,7 @@ import sciunit2.version_control
 import sciunit2.records
 import sciunit2.archiver
 import sciunit2.ephemeral
+import sciunit2.s3
 import sciunit2.wget
 
 import os
@@ -61,6 +62,8 @@ def _is_path_component(s):
 def _is_once_token(s):
     return re.match(r'^[\w]+#$', s)
 
+def _is_s3_url(s):
+    return re.match(r'^https://[a-zA-Z0-9.\-]+\.s3\.amazonaws\.com/.*$', s)
 
 def location_for(name):
     return os.path.expanduser('~/sciunit/%s' % name)
@@ -111,6 +114,8 @@ def open(s):
             p = _extract(s)
         elif _is_once_token(s):
             p = _extract(sciunit2.ephemeral.fetch(s, location_for('tmp')))
+        elif _is_s3_url(s):
+            p = _extract(sciunit2.s3.fetch(s, location_for('tmp')))
         elif _is_path_component(s):
             p = location_for(s)
             if not os.path.isdir(p):
