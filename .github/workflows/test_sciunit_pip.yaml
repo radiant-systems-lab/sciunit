@@ -1,0 +1,64 @@
+name: Test SciUnit Across OS Versions
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  QUIET: 0
+
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - name: Ubuntu_24.04
+            dockerfile: files/ubuntu24/Dockerfile
+          - name: Ubuntu_22.04
+            dockerfile: files/ubuntu22/Dockerfile
+          - name: Ubuntu_20.04
+            dockerfile: files/ubuntu20/Dockerfile
+          - name: Ubuntu_18.04
+            dockerfile: files/ubuntu18/Dockerfile
+          - name: RHEL_9
+            dockerfile: files/rhel9/Dockerfile
+          - name: RHEL_8
+            dockerfile: files/rhel8/Dockerfile
+          - name: Debian_13
+            dockerfile: files/debian13/Dockerfile
+          - name: Debian_12
+            dockerfile: files/debian12/Dockerfile
+          - name: Debian_11
+            dockerfile: files/debian11/Dockerfile
+          - name: CentOS_8
+            dockerfile: files/centos8/Dockerfile
+          - name: Arch
+            dockerfile: files/arch/Dockerfile
+          - name: Fedora_42
+            dockerfile: files/fedora42/Dockerfile
+      # max-parallel: 1
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image for ${{ matrix.name }}
+        run: |
+          docker build \
+            -t "sciunit-test:${{ matrix.name }}" \
+            -f "${{ matrix.dockerfile }}" \
+            .
+
+
+      - name: Run SciUnit test for ${{ matrix.name }}
+        run: |
+          echo "Running SciUnit test on ${{ matrix.name }}"
+          docker run --rm \
+            -v ${{ github.workspace }}/files/utility/test_sciunit.sh:/test_sciunit.sh:ro \
+            sciunit-test:${{ matrix.name }} \
+            bash /test_sciunit.sh
