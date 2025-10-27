@@ -130,8 +130,8 @@ class ExecutionManager(object):
         k, v = self.__pending   # eid, Metadata
         v.size = size
         # self.__f[k] = str(v)
-        script = "insert into revs (data) values (?)"
-        self.__c.execute(script, [str(v)])
+        script = "insert into revs (id,data) values (?,?)"
+        self.__c.execute(script, [str(k),str(v)])
         self.__f.commit()
 
         return self.__to_rev(k), v
