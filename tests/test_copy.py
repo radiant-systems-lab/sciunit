@@ -28,30 +28,28 @@ class TestCopy(testit.LocalCase):
             testit.sciunit('open', 'nonexistent#')
         assert_equal(r.exception.code, 1)
 
-        # these test cases need revision because copy functionality
-        # is depdendent on file.io which
-        # has been changed to limewire. We need a new service.
-        # out = StringIO()
-        # with mock.patch('sys.stdout', out):
-        #     testit.sciunit('copy')
-        # token = out.getvalue().strip()
-        #
-        # # this case fails due to ssl handshake error
-        # # shutil.rmtree('tmp', True)
-        # # assert_is_none(testit.sciunit('open', token))
-        #
-        # with assert_raises(SystemExit) as r:
-        #     testit.sciunit('repeat', 'e1')
-        # assert_equal(r.exception.code, 0)
-        #
-        # out = StringIO()
-        # with mock.patch('sys.stdout', out):
-        #     testit.sciunit('copy', '-n')
-        # path = out.getvalue().strip()
-        #
-        # assert_true(path.endswith('.zip'))
-        # assert_is_none(testit.sciunit('open', path))
-        #
-        # with assert_raises(SystemExit) as r:
-        #     testit.sciunit('repeat', 'e1')
-        # assert_equal(r.exception.code, 0)
+        # Test S3 copy functionality
+        # Mock the S3 upload to avoid actual AWS calls during testing
+        mock_cf_url = "https://d3okuktvxs1y4w.cloudfront.net/2024-01-07-12:00:00/ok.zip"
+
+        out = StringIO()
+        with mock.patch('sys.stdout', out), \
+             mock.patch('sciunit2.s3.live', return_value=mock_cf_url):
+            testit.sciunit('copy')
+        url = out.getvalue().strip()
+
+        # Verify it returns a CloudFront URL
+        assert_true(url.startswith('https://d3okuktvxs1y4w.cloudfront.net/'))
+
+        # Test local copy with -n flag
+        out = StringIO()
+        with mock.patch('sys.stdout', out):
+            testit.sciunit('copy', '-n')
+        path = out.getvalue().strip()
+
+        assert_true(path.endswith('.zip'))
+        assert_is_none(testit.sciunit('open', path))
+
+        with assert_raises(SystemExit) as r:
+            testit.sciunit('repeat', 'e1')
+        assert_equal(r.exception.code, 0)

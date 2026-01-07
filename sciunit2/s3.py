@@ -5,6 +5,7 @@ import os
 from datetime import datetime
 from retry import retry
 import urllib
+from sciunit2.aws_credentials import get_aws_credentials
 
 
 
@@ -13,8 +14,14 @@ CF_DOMAIN  = "https://d3okuktvxs1y4w.cloudfront.net"
 def live(fn, bucket="sciunit2-talha"):
     """
     Uploads a file to S3 and returns a CF download URL.
+    Fetches AWS credentials dynamically from endpoint to handle rotation.
     """
-    s3 = boto3.client('s3')
+    creds = get_aws_credentials()
+    s3 = boto3.client(
+        's3',
+        aws_access_key_id=creds['aws_access_key_id'],
+        aws_secret_access_key=creds['aws_secret_access_key']
+    )
     key = datetime.now().strftime("%Y-%m-%d-%H:%M:%S") + "/" + fn
     s3.upload_file(fn, bucket, key)
     cf_url = f"{CF_DOMAIN}/{key}"
