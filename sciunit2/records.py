@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 
 from sciunit2.exceptions import CommandError, MalformedExecutionId
 from sciunit2 import timestamp
@@ -116,7 +115,7 @@ class ExecutionManager(object):
         try:
             last_row_id = self.__c.execute(script).fetchone()[0]
 
-            if last_row_id != None:
+            if last_row_id is not None:
                 last_id = last_row_id + 1
 
         except Error as e:
@@ -131,16 +130,8 @@ class ExecutionManager(object):
         k, v = self.__pending   # eid, Metadata
         v.size = size
         # self.__f[k] = str(v)
-
-        script = """
-            insert into revs (data)
-            values (
-                '""" + str(v) + """'
-
-                );
-                """
-
-        self.__c.executescript(script)
+        script = "insert into revs (data) values (?)"
+        self.__c.execute(script, [str(v)])
         self.__f.commit()
 
         return self.__to_rev(k), v
@@ -149,7 +140,7 @@ class ExecutionManager(object):
         script = "select max(id) from revs"
         last_row_id = self.__c.execute(script).fetchone()[0]
 
-        if last_row_id != None:
+        if last_row_id is not None:
             return last_row_id
         else:
             return 1
@@ -165,11 +156,11 @@ class ExecutionManager(object):
         #     return self.__f.db.get(i)
         # except KeyError:
         #     raise CommandError('execution %r not found' % self.__to_rev(i))
-        script = "select * from revs where id = " + str(i)
+        script = "select * from revs where id = ?"
 
-        row = self.__c.execute(script).fetchone()
+        row = self.__c.execute(script, [i]).fetchone()
 
-        if row != None:
+        if row is not None:
             return row[1]
         else:
             raise CommandError('execution %r not found' % self.__to_rev(i))
@@ -188,9 +179,9 @@ class ExecutionManager(object):
         #     del self.__f[self.__to_id(rev)]
         # except KeyError:
         #     pass
-        script = "delete from revs where id = " + str(self.__to_id(rev))
+        script = "delete from revs where id = ?"
         # delete record
-        self.__c.execute(script)
+        self.__c.execute(script, [self.__to_id(rev)])
         self.__f.commit()
 
     def delete_id(self, id):
@@ -230,7 +221,7 @@ class ExecutionManager(object):
         # for idb in range(bounds[0], bounds[1]):
         #     self.delete_id(idb)
 
-        for _id in range(bounds[0], bounds[1]+1):
+        for _id in range(bounds[0], bounds[1] + 1):
             self.delete_id(_id)
 
     def sort(self, revls):
@@ -300,7 +291,6 @@ class ExecutionManager(object):
 
         # todo
         pass
-
 
     @staticmethod
     def __to_rev(id_):

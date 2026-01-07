@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 
 from sciunit2.command import AbstractCommand
 from sciunit2.command.list import run_listing

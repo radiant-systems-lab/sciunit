@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 
 from sciunit2.command import AbstractCommand
 from sciunit2.exceptions import CommandLineError
@@ -35,4 +34,6 @@ class RemoveCommand(AbstractCommand):
                 return None
 
     def note(self, project_dir):
-        return quoted_format('Successfully removed sciunit project {0}\n', project_dir)
+        return quoted_format(
+            'Successfully removed sciunit project {0}\n',
+            project_dir)

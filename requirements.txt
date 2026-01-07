@@ -8,6 +8,6 @@ humanfriendly
 configobj
 hs_restclient
 contextlib2
-tqdm>=4.17.1
+tqdm
 backports.tempfile
 boto3

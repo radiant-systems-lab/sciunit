@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 import builtins
 
 from sciunit2.util import quoted_format, quoted

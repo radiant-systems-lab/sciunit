@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 
 from sciunit2.exceptions import CommandLineError, CommandError
 from sciunit2.command.create import CreateCommand
@@ -80,7 +79,7 @@ def main():
 
 
 def _main(args):
-    if platform.system().startswith('Linux') == False:
+    if not platform.system().startswith('Linux'):
         err1('Platform is not supported')
         sys.exit(1)
 
