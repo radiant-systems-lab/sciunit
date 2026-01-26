@@ -4,8 +4,7 @@ AWS credential fetching for sciunit S3 operations.
 import requests
 
 # Endpoint that serves the current AWS credentials
-CREDENTIALS_URL = "https://d3okuktvxs1y4w.cloudfront.net/sciunit-aws-creds.json"
-
+CREDENTIALS_URL = "https://d3okuktvxs1y4w.cloudfront.net/persistent/sciunit-aws-creds.json"
 
 def get_aws_credentials():
     """
