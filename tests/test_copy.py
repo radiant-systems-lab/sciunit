@@ -3,6 +3,7 @@ from nose.tools import *
 from unittest import mock
 import shutil
 from io import StringIO
+from sciunit2.s3 import CF_DOMAIN
 
 from tests import testit
 
@@ -28,18 +29,22 @@ class TestCopy(testit.LocalCase):
             testit.sciunit('open', 'nonexistent#')
         assert_equal(r.exception.code, 1)
 
-        # Test S3 copy functionality
-        # Mock the S3 upload to avoid actual AWS calls during testing
-        mock_cf_url = "https://d3okuktvxs1y4w.cloudfront.net/2024-01-07-12:00:00/ok.zip"
-
+        # Test S3 copy functionality (actual upload and download)
         out = StringIO()
-        with mock.patch('sys.stdout', out), \
-             mock.patch('sciunit2.s3.live', return_value=mock_cf_url):
+        with mock.patch('sys.stdout', out):
             testit.sciunit('copy')
-        url = out.getvalue().strip()
+        cf_url = out.getvalue().strip()
 
         # Verify it returns a CloudFront URL
-        assert_true(url.startswith('https://d3okuktvxs1y4w.cloudfront.net/'))
+        assert_true(cf_url.startswith(CF_DOMAIN))
+
+        # Open the sciunit from CloudFront URL (actual download)
+        assert_is_none(testit.sciunit('open', cf_url))
+
+        # Verify we can repeat from the downloaded sciunit
+        with assert_raises(SystemExit) as r:
+            testit.sciunit('repeat', 'e1')
+        assert_equal(r.exception.code, 0)
 
         # Test local copy with -n flag
         out = StringIO()
