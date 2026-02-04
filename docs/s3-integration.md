@@ -56,10 +56,10 @@ We use CloudFront as a CDN layer on top of S3 for downloads because:
 ```bash
 # Upload a sciunit to S3 and get a shareable URL
 sciunit copy
-# Output: https://d3okuktvxs1y4w.cloudfront.net/2024-01-07-12:00:00/myproject.zip
+# Output: https://d3okuktvxs1y4w.cloudfront.net/projects/2024-01-07-12:00:00/myproject.zip
 
 # Open a sciunit from the URL
-sciunit open https://d3okuktvxs1y4w.cloudfront.net/2024-01-07-12:00:00/myproject.zip
+sciunit open https://d3okuktvxs1y4w.cloudfront.net/projects/2024-01-07-12:00:00/myproject.zip
 
 # Local copy only (no S3 upload)
 sciunit copy -n
