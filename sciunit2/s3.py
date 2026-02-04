@@ -22,7 +22,7 @@ def live(fn, bucket="sciunit2-talha"):
         aws_access_key_id=creds['aws_access_key_id'],
         aws_secret_access_key=creds['aws_secret_access_key']
     )
-    key = datetime.now().strftime("%Y-%m-%d-%H:%M:%S") + "/" + fn
+    key = "projects/" + datetime.now().strftime("%Y-%m-%d-%H:%M:%S") + "/" + fn
     s3.upload_file(fn, bucket, key)
     cf_url = f"{CF_DOMAIN}/{key}"
     return cf_url
