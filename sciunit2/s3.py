@@ -33,9 +33,18 @@ def fetch(url, base):
     Downloads a file from a CF URL and returns a file-like object.
     """
     import requests
-    with requests.get(url, stream=True) as resp:
-        resp.raise_for_status()
-        f = tempfile.NamedTemporaryFile(prefix=base, dir="")
-        shutil.copyfileobj(resp.raw, f)
-        f.seek(0)
-        return f
+    from sciunit2.exceptions import CommandError
+    try:
+        with requests.get(url, stream=True) as resp:
+            if resp.status_code == 429:
+                raise CommandError(
+                    "Monthly download bandwidth limit exceeded. "
+                    "Please try again next month or contact the sciunit maintainers."
+                )
+            resp.raise_for_status()
+            f = tempfile.NamedTemporaryFile(prefix=base, dir="")
+            shutil.copyfileobj(resp.raw, f)
+            f.seek(0)
+            return f
+    except requests.exceptions.RequestException as exc:
+        raise CommandError("Failed to download: %s" % exc)
