@@ -1,8 +1,0 @@
-{
-  "name": "cf-bandwidth-accounting",
-  "version": "1.0.0",
-  "type": "module",
-  "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.0.0"
-  }
-}
