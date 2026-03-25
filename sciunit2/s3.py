@@ -11,7 +11,7 @@ from sciunit2.aws_credentials import get_aws_credentials
 
 CF_DOMAIN  = "https://d3okuktvxs1y4w.cloudfront.net"
 
-def live(fn, bucket="sciunit2-talha"):
+def live(fn, bucket="sciunit-copy"):
     """
     Uploads a file to S3 and returns a CF download URL.
     Fetches AWS credentials dynamically from endpoint to handle rotation.
