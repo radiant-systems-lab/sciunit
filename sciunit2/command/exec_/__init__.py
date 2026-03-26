@@ -7,7 +7,7 @@ import sciunit2.core
 import sciunit2.workspace
 
 from getopt import getopt
-from pkg_resources import resource_filename
+from importlib.resources import files
 
 
 class ExecCommand(CommitMixin, AbstractCommand):
@@ -28,7 +28,7 @@ class ExecCommand(CommitMixin, AbstractCommand):
         with emgr.exclusive():
             rev = emgr.add(args)
             if optlist:
-                standin_fn = resource_filename(__name__, 'sciunit')
+                standin_fn = str(files(__name__).joinpath('sciunit'))
                 sciunit2.core.shell(env=path_injection_for(standin_fn))
             else:
                 sciunit2.core.capture(args)
