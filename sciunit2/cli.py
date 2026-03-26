@@ -22,7 +22,7 @@ import sys
 from getopt import getopt, GetoptError
 from io import StringIO
 import textwrap
-import pkg_resources
+from importlib.metadata import version as pkg_version
 import os
 import platform
 
@@ -92,7 +92,7 @@ def _main(args):
             subcommand_usage(sys.stdout, [cls() for cls in __cmds__])
             return
         elif op == '--version':
-            print(pkg_resources.require("sciunit2")[0])
+            print(pkg_version("sciunit2"))
             return
         elif op == '--root':  # pragma: no cover
             import sciunit2.workspace

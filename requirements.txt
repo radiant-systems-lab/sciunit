@@ -1,4 +1,3 @@
-setuptools
 tzlocal
 utcdatetime
 zipfile2

@@ -5,7 +5,7 @@ from getopt import getopt
 import os
 import pwd
 import tempfile
-import pkg_resources
+from importlib.resources import files
 from shutil import copyfileobj
 from contextlib import closing
 from humanfriendly import format_path
@@ -43,7 +43,8 @@ class PostInstallCommand(AbstractCommand):
         to_ = os.path.expanduser(to)
         with tempfile.NamedTemporaryFile(dir=os.path.dirname(to_),
                                          prefix='pip-tmp') as tmp:
-            script = pkg_resources.resource_stream(__name__, from_)
+            script_path = files(__name__).joinpath(from_)
+            script = script_path.open("rb")
             try:
                 with closing(script) as g, closing(open(to_, 'a+')) as f:
                     f.seek(0)
@@ -68,4 +69,4 @@ class PostInstallCommand(AbstractCommand):
                 print('Unable to patch %s.  Please copy\n\n    %s\n\n'
                       'to a subdirectory of your home directory '
                       'and "source" it in %s.' %
-                      (to, format_path(script.name), rcfile))
+                      (to, format_path(str(script_path)), rcfile))
