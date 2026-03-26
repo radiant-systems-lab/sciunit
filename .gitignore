@@ -22,3 +22,13 @@ Makefile
 CMakeCache.txt
 CMakeFiles/
 install_manifest.txt
+
+# Terraform
+**/.terraform/
+*.tfplan
+crash.log
+
+# Lambda build artifacts
+aws/lambda-edge/terraform/dist/
+aws/lambda-edge/*/node_modules/
+aws/lambda-edge/*/package-lock.json
