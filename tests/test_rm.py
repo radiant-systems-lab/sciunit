@@ -43,6 +43,25 @@ class TestRm(testit.LocalCase):
 
         assert_is_none(testit.sciunit('exec', 'true'))
 
+        for _ in range(3):
+            testit.sciunit('exec', 'true')
+
+        testit.sciunit('rm', 'e4')
+
+        with assert_raises(SystemExit) as r:
+            testit.sciunit('repeat', 'e4')
+        assert_equal(r.exception.code, 1)
+
+        testit.sciunit('exec', 'true')
+
+        with assert_raises(SystemExit) as r:
+            testit.sciunit('repeat', 'e4')
+        assert_equal(r.exception.code, 0)
+
+        with assert_raises(SystemExit) as r:
+            testit.sciunit('repeat', 'e5')
+        assert_equal(r.exception.code, 1)
+
     def test_range(self):
         with assert_raises(SystemExit) as r:
             testit.sciunit('rm', 'e1-')
@@ -103,3 +122,25 @@ class TestRm(testit.LocalCase):
 
         assert_is_none(testit.sciunit('rm', 'e1-10'))
         assert_is_none(testit.sciunit('exec', 'true'))
+
+        for _ in range(4):
+            testit.sciunit('exec', 'true')
+
+        testit.sciunit('rm', 'e3-5')
+
+        for eid in ['e3', 'e4', 'e5']:
+            with assert_raises(SystemExit) as r:
+                testit.sciunit('repeat', eid)
+            assert_equal(r.exception.code, 1)
+
+        testit.sciunit('exec', 'true')
+
+        with assert_raises(SystemExit) as r:
+            testit.sciunit('repeat', 'e3')
+        assert_equal(r.exception.code, 0)
+
+        testit.sciunit('exec', 'true')
+
+        with assert_raises(SystemExit) as r:
+            testit.sciunit('repeat', 'e4')
+        assert_equal(r.exception.code, 0)
