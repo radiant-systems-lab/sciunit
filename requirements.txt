@@ -11,3 +11,5 @@ tqdm
 backports.tempfile
 boto3
 requests
+cryptography
+argon2-cffi

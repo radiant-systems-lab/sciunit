@@ -1,4 +1,3 @@
-
 import shutil
 import os
 import sys
@@ -6,6 +5,7 @@ from distutils.errors import DistutilsFileError
 from getopt import getopt
 
 import sciunit2.core
+import sciunit2.security
 import sciunit2.workspace
 from sciunit2.cdelog import DetachedExecution
 from sciunit2.command import AbstractCommand
@@ -37,8 +37,18 @@ class GivenCommand(CommitMixin, AbstractCommand):
             raise CommandError('no match')
         self.name = 'repeat'
         optlist, args = getopt(args, '')
+        project_root = sciunit2.workspace.at()
+        rev = args[0]
 
-        with CheckoutContext(args[0]) as (pkgdir, orig):
+        with CheckoutContext(rev) as (pkgdir, orig):
+            if sciunit2.security.package_requires_unlock(pkgdir):
+                shared_key = sciunit2.security.cached_shared_key(project_root,
+                                                                 rev)
+                if not shared_key:
+                    raise CommandError(
+                        "execution %r is locked; run 'sciunit unlock %s --key <shared-key>'"
+                        % (rev, rev))
+                sciunit2.security.restore_execution(pkgdir, shared_key)
             try:
                 de = DetachedExecution(pkgdir)
                 if os.path.isabs(files[0]):

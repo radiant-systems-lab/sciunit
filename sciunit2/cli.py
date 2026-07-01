@@ -1,9 +1,9 @@
-
 from sciunit2.exceptions import CommandLineError, CommandError
 from sciunit2.command.create import CreateCommand
 from sciunit2.command.open import OpenCommand
 from sciunit2.command.exec_ import ExecCommand
 from sciunit2.command.repeat import RepeatCommand
+from sciunit2.command.unlock import UnlockCommand
 from sciunit2.command.list import ListCommand
 from sciunit2.command.show import ShowCommand
 from sciunit2.command.given import GivenCommand
@@ -27,9 +27,10 @@ import os
 import platform
 
 __cmds__ = [CreateCommand, OpenCommand, ExecCommand, RepeatCommand,
-            ListCommand, ShowCommand, GivenCommand, CommitCommand, RmCommand,
-            SortCommand, PushCommand, CopyCommand, PostInstallCommand,
-            DiffCommand, RemoveCommand, ExportCommand, CheckoutCommand]
+            UnlockCommand, ListCommand, ShowCommand, GivenCommand,
+            CommitCommand, RmCommand, SortCommand, PushCommand, CopyCommand,
+            PostInstallCommand, DiffCommand, RemoveCommand, ExportCommand,
+            CheckoutCommand]
 
 
 def short_usage(out):
