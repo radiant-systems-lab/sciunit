@@ -33,7 +33,9 @@ class RepeatCommand(AbstractCommand):
                                                                  rev)
                 if not shared_key:
                     raise CommandError(
-                        "execution %r is locked; run 'sciunit unlock %s --key <shared-key>'"
+                        "execution %r is encrypted and cannot be repeated yet.\n"
+                        "Run this command in a terminal, then come back and restart the Sciunit Repeat Kernel:\n"
+                        "  sciunit unlock %s --key <shared-key>"
                         % (rev, rev))
                 sciunit2.security.restore_execution(pkgdir, shared_key)
             sys.exit(sciunit2.core.repeat(pkgdir, orig, args[1:]))
