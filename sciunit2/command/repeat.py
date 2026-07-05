@@ -23,6 +23,10 @@ class RepeatCommand(AbstractCommand):
             raise CommandLineError
         project_root = sciunit2.workspace.at()
         rev = args[0]
+        if rev == 'latest':
+            emgr, _ = sciunit2.workspace.current()
+            with emgr.exclusive():
+                rev, _ = emgr.last()
         with CheckoutContext(rev) as (pkgdir, orig):
             if sciunit2.security.package_requires_unlock(pkgdir):
                 shared_key = sciunit2.security.cached_shared_key(project_root,

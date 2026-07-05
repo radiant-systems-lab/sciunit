@@ -11,6 +11,8 @@ import os
 def CheckoutContext(rev):
     emgr, repo = sciunit2.workspace.current()
     with emgr.exclusive():
+        if rev == 'latest':
+            rev, _ = emgr.last()
         orig = emgr.get(rev).cmd
         pkgdir = os.path.join(repo.location, 'cde-package')
         repo.cleanup(pkgdir)
@@ -22,6 +24,8 @@ def CheckoutContext(rev):
 def CheckoutContext_Diff(rev):
     emgr, repo = sciunit2.workspace.current()
     with emgr.exclusive():
+        if rev == 'latest':
+            rev, _ = emgr.last()
         orig = emgr.get(rev).cmd
         pkgdir = os.path.join(repo.location, 'cde-package' + rev)
         repo.cleanup(pkgdir)
