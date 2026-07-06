@@ -38,6 +38,23 @@ SECRET_NAMES = {
     'API_KEY',
     'API_SECRET',
     'SMTP_PASSWORD',
+    'TOKEN',
+    'ACCESS_TOKEN',
+    'REFRESH_TOKEN',
+    'SESSION_TOKEN',
+    'JUPYTERHUB_API_TOKEN',
+    'JPY_API_TOKEN',
+    'SES_USER_TOKEN',
+    'GITHUB_TOKEN',
+    'AUTH_TOKEN',
+    'BEARER_TOKEN',
+    'ID_TOKEN',
+    'JWT',
+    'AUTHORIZATION',
+    'AWS_ACCESS_KEY_ID',
+    'AWS_SECRET_ACCESS_KEY',
+    'PRIVATE_KEY',
+    'SSH_KEY',
 }
 
 PII_NAMES = {
@@ -54,6 +71,23 @@ ARGON2_TIME_COST = 3
 ARGON2_PARALLELISM = 1
 AES_KEY_BYTES = 32
 AES_NONCE_BYTES = 12
+KEY_NAME_PATTERN = r'[A-Za-z_][A-Za-z0-9_ -]{0,80}'
+SECRET_NAME_PARTS = {
+    'SECRET',
+    'PASSWORD',
+    'PASSWD',
+    'PWD',
+    'CREDENTIAL',
+    'CREDENTIALS',
+}
+SECRET_NAME_SUFFIXES = (
+    '_TOKEN',
+    '_SECRET',
+    '_PASSWORD',
+    '_PASSWD',
+    '_CREDENTIAL',
+    '_CREDENTIALS',
+)
 
 
 def protect_execution(pkgdir, rev):
@@ -214,16 +248,19 @@ def _protect_text_files(pkg_path, manifest, vault_items, state):
 
 def _redact_content(content, state, vault_items):
     matches = []
-    patterns = []
-
-    for name in sorted(SECRET_NAMES | PII_NAMES):
-        escaped = re.escape(name)
-        patterns.append(re.compile(
-            rf'(?P<prefix>(?P<key>["\']?{escaped}["\']?)\s*[:=]\s*)'
-            rf'(?P<quote>["\'])(?P<value>.*?)(?P=quote)'))
-        patterns.append(re.compile(
-            rf'(?m)^(?P<prefix>\s*(?P<key>{escaped})\s*=\s*)'
-            rf'(?P<value>[^\n#"\']+?)\s*$'))
+    flags = re.IGNORECASE | re.MULTILINE
+    patterns = [
+        re.compile(
+            rf'(?P<prefix>["\']?(?P<key>{KEY_NAME_PATTERN})["\']?'
+            rf'[ \t]*[:=][ \t]*)'
+            rf'(?P<quote>\\?["\'])(?P<value>.*?)(?P=quote)',
+            flags),
+        re.compile(
+            rf'^(?P<prefix>\s*["\']?(?P<key>{KEY_NAME_PATTERN})["\']?'
+            rf'[ \t]*[:=][ \t]*)'
+            rf'(?P<value>[^\n#,"\'\}}\]]+?)\s*(?:[,\}}])?$',
+            flags),
+    ]
 
     for pattern in patterns:
         for match in pattern.finditer(content):
@@ -232,7 +269,7 @@ def _redact_content(content, state, vault_items):
             if class_ is None:
                 continue
             value = match.group('value').strip()
-            if not value:
+            if not value or value.startswith('__SCIUNIT_'):
                 continue
             item_id = _next_id(class_, state)
             placeholder = _placeholder_for(class_, item_id)
@@ -280,16 +317,25 @@ def _redact_content(content, state, vault_items):
 
 
 def _normalize_name(name):
+    name = re.sub(r'(?i)^\s*export\s+', '', name)
     normalized = re.sub(r'[^A-Za-z0-9]+', '_', name.upper())
     normalized = re.sub(r'_+', '_', normalized).strip('_')
     return normalized
 
 
 def _classify_name(name):
-    if name in SECRET_NAMES:
-        return 'secret'
     if name in PII_NAMES:
         return 'pii'
+    if name in SECRET_NAMES:
+        return 'secret'
+
+    parts = set(name.split('_'))
+    if parts & SECRET_NAME_PARTS:
+        return 'secret'
+    if name.endswith(SECRET_NAME_SUFFIXES):
+        return 'secret'
+    if name.endswith('_KEY') and ('API' in parts or 'AWS' in parts):
+        return 'secret'
     return None
 
 

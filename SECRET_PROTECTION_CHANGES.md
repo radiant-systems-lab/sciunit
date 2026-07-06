@@ -41,6 +41,28 @@ Examples:
 - `SMTP_EMAIL` -> redacted as PII
 - `SMTP_SERVER` -> left plaintext as config
 
+Additional token protection now includes common runtime and service token fields such as:
+
+- `ACCESS_TOKEN`
+- `REFRESH_TOKEN`
+- `SESSION_TOKEN`
+- `JUPYTERHUB_API_TOKEN`
+- `JPY_API_TOKEN`
+- `SES_USER_TOKEN`
+- `GITHUB_TOKEN`
+- `AUTHORIZATION`
+- AWS access key fields
+- private / SSH key fields
+
+Generic key names ending in `_TOKEN`, `_SECRET`, `_PASSWORD`, `_PASSWD`, `_CREDENTIAL`,
+or `_CREDENTIALS` are also treated as secrets. API/AWS-style `_KEY` names are
+protected when the key name indicates API or AWS credentials. Derived metadata fields
+such as `token_fingerprint` remain plaintext.
+
+Supported assignment formats include quoted values, unquoted `.env` / shell values,
+`export KEY=value` shell syntax, YAML `key: value` syntax, nested YAML blocks, and
+escaped notebook JSON source strings.
+
 ## New storage layout in `cde-package`
 
 When protection is needed, Sciunit adds:
@@ -107,6 +129,21 @@ After checkout and before execution, Sciunit now:
 
 If the package is protected and no key has been cached, repeat fails with an unlock instruction.
 
+For notebook replay, the FLINC repeat handler surfaces this condition before the
+notebook repeats. The user-facing message says the selected execution is encrypted,
+prints `sciunit unlock <execution id> --key <shared-key>`, and tells the user to
+restart the Sciunit Repeat Kernel after unlocking. Full Sciunit stdout/stderr is
+kept in `flinc.log`.
+
+Repeat scenarios:
+
+- Protected package and no cached key: stop before execution and show the unlock
+  command.
+- Protected package and wrong cached key: stop with the decrypt / unlock failure.
+- Protected package and correct cached key: restore encrypted artifacts and
+  redacted values, then repeat normally.
+- Unprotected package: repeat normally without an unlock prompt.
+
 ### CLI
 
 - `sciunit2/cli.py`
@@ -114,8 +151,11 @@ If the package is protected and no key has been cached, repeat fails with an unl
 
 ## What is intentionally not handled yet
 
-- runtime session secrets such as `ACCESS_TOKEN`, `REFRESH_TOKEN`, and JupyterHub tokens
-- env overlay / fresh session secret injection during repeat
+- fresh runtime/session secret injection during repeat
+- policy decisions about whether old session tokens should be restored, rotated, or
+  replaced by environment overlays on the repeat side
 - direct modification of `vvpkg.bin`
 
-Those are planned as a later phase.
+Runtime token values are now redacted from captured plaintext files when they appear
+in supported assignment formats, but repeat-time rebinding remains a separate policy
+phase.

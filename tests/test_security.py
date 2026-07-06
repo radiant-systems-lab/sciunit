@@ -58,6 +58,36 @@ class TestSecurity(testit.LocalCase):
         with open(os.path.join(pkgdir, 'cde.full-environment.cde-root')) as f:
             self.assertIn('ACCESS_TOKEN=abc', f.read())
 
+    def test_token_redaction_formats(self):
+        state = {'secret': 0, 'pii': 0, 'artifact': 0}
+        vault_items = []
+        content = (
+            'ACCESS_TOKEN = "runtime-token"\n'
+            'refresh_token: fake-refresh-token\n'
+            'Authorization: "Bearer live-token"\n'
+            '\"GITHUB_TOKEN\": \"ghp_fakeToken\"\n'
+            'auth:\n'
+            '  API_KEY: sk-test-openmeteo-proxy\n'
+            'token_fingerprint = "not-protected"\n'
+            'SMTP_EMAIL = "person@example.com"\n'
+        )
+
+        replacements, redacted = sciunit2.security._redact_content(
+            content, state, vault_items)
+
+        self.assertEqual(6, len(replacements))
+        self.assertNotIn('runtime-token', redacted)
+        self.assertNotIn('fake-refresh-token', redacted)
+        self.assertNotIn('Bearer live-token', redacted)
+        self.assertNotIn('ghp_fakeToken', redacted)
+        self.assertNotIn('sk-test-openmeteo-proxy', redacted)
+        self.assertNotIn('person@example.com', redacted)
+        self.assertIn('not-protected', redacted)
+        self.assertEqual(5, len([item for item in vault_items
+                                 if item['class'] == 'secret']))
+        self.assertEqual(1, len([item for item in vault_items
+                                 if item['class'] == 'pii']))
+
     def test_key_cache(self):
         project_root = os.path.join('tmp', 'proj')
         sciunit2.security.cache_shared_key(project_root, 'e7', 'shared-key')
