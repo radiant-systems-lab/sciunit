@@ -24,6 +24,9 @@ WHOLE_FILE_ARTIFACTS = (
     Path('cde-root/home/root/.ipython/profile_default/history.sqlite'),
 )
 
+JUPYTER_RUNTIME_PARTS = ('.local', 'share', 'jupyter', 'runtime')
+JUPYTER_CONNECTION_SECRET_NAMES = {'KEY'}
+
 TEXT_SUFFIXES = {
     '.py', '.ipynb', '.json', '.yaml', '.yml',
     '.toml', '.ini', '.cfg', '.env', '.sh',
@@ -232,7 +235,8 @@ def _protect_text_files(pkg_path, manifest, vault_items, state):
         except UnicodeDecodeError:
             continue
 
-        replacements, new_content = _redact_content(content, state, vault_items)
+        replacements, new_content = _redact_content(content, state, vault_items,
+                                                   path)
         if not replacements:
             continue
 
@@ -246,7 +250,7 @@ def _protect_text_files(pkg_path, manifest, vault_items, state):
     return protected
 
 
-def _redact_content(content, state, vault_items):
+def _redact_content(content, state, vault_items, path=None):
     matches = []
     flags = re.IGNORECASE | re.MULTILINE
     patterns = [
@@ -265,7 +269,7 @@ def _redact_content(content, state, vault_items):
     for pattern in patterns:
         for match in pattern.finditer(content):
             name = _normalize_name(match.group('key'))
-            class_ = _classify_name(name)
+            class_ = _classify_name(name, path)
             if class_ is None:
                 continue
             value = match.group('value').strip()
@@ -323,10 +327,13 @@ def _normalize_name(name):
     return normalized
 
 
-def _classify_name(name):
+def _classify_name(name, path=None):
     if name in PII_NAMES:
         return 'pii'
     if name in SECRET_NAMES:
+        return 'secret'
+    if (_is_jupyter_connection_file(path)
+            and name in JUPYTER_CONNECTION_SECRET_NAMES):
         return 'secret'
 
     parts = set(name.split('_'))
@@ -337,6 +344,22 @@ def _classify_name(name):
     if name.endswith('_KEY') and ('API' in parts or 'AWS' in parts):
         return 'secret'
     return None
+
+
+def _is_jupyter_connection_file(path):
+    if path is None:
+        return False
+    path = Path(path)
+    parts = path.parts
+    if path.suffix.lower() != '.json' or not path.name.startswith('kernel-'):
+        return False
+    if len(parts) < len(JUPYTER_RUNTIME_PARTS):
+        return False
+    return any(
+        tuple(parts[i:i + len(JUPYTER_RUNTIME_PARTS)])
+        == JUPYTER_RUNTIME_PARTS
+        for i in range(len(parts) - len(JUPYTER_RUNTIME_PARTS) + 1)
+    )
 
 
 def _next_id(class_, state):

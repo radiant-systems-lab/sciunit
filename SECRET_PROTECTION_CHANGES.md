@@ -54,6 +54,11 @@ Additional token protection now includes common runtime and service token fields
 - AWS access key fields
 - private / SSH key fields
 
+Jupyter kernel connection files under `.local/share/jupyter/runtime/kernel-*.json`
+are handled as a scoped special case: their `key` field is redacted as a
+runtime secret, while generic JSON fields named `key` outside that runtime path
+are left alone unless another secret-name rule matches.
+
 Generic key names ending in `_TOKEN`, `_SECRET`, `_PASSWORD`, `_PASSWD`, `_CREDENTIAL`,
 or `_CREDENTIALS` are also treated as secrets. API/AWS-style `_KEY` names are
 protected when the key name indicates API or AWS credentials. Derived metadata fields

@@ -88,6 +88,48 @@ class TestSecurity(testit.LocalCase):
         self.assertEqual(1, len([item for item in vault_items
                                  if item['class'] == 'pii']))
 
+    def test_jupyter_connection_key_redaction(self):
+        pkgdir = os.path.join('tmp', 'proj', 'cde-package')
+        runtime = os.path.join(
+            pkgdir,
+            'cde-root/home/root/.local/share/jupyter/runtime')
+        testit.mkdir(runtime)
+
+        target = os.path.join(runtime, 'kernel-test.json')
+        with open(target, 'w') as f:
+            f.write('{\n'
+                    '  "shell_port": 37147,\n'
+                    '  "key": "live-jupyter-key",\n'
+                    '  "signature_scheme": "hmac-sha256"\n'
+                    '}\n')
+
+        protection = sciunit2.security.protect_execution(pkgdir, 'e1')
+        self.assertTrue(protection['protected'])
+
+        with open(target) as f:
+            redacted = f.read()
+        self.assertIn('__SCIUNIT_SECRET_sec_001__', redacted)
+        self.assertNotIn('live-jupyter-key', redacted)
+
+        self.assertTrue(sciunit2.security.restore_execution(
+            pkgdir, protection['share_key']))
+        with open(target) as f:
+            restored = f.read()
+        self.assertIn('"key": "live-jupyter-key"', restored)
+
+    def test_generic_json_key_is_not_redacted(self):
+        state = {'secret': 0, 'pii': 0, 'artifact': 0}
+        vault_items = []
+        content = '{"key": "not-a-secret", "API_KEY": "secret"}'
+
+        replacements, redacted = sciunit2.security._redact_content(
+            content, state, vault_items,
+            'cde-root/home/jovyan/work/config.json')
+
+        self.assertEqual(1, len(replacements))
+        self.assertIn('not-a-secret', redacted)
+        self.assertNotIn('"secret"', redacted)
+
     def test_key_cache(self):
         project_root = os.path.join('tmp', 'proj')
         sciunit2.security.cache_shared_key(project_root, 'e7', 'shared-key')
