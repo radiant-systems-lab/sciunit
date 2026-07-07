@@ -55,6 +55,14 @@ class GivenCommand(CommitMixin, AbstractCommand):
                         "Run this command in a terminal, then come back and restart the Sciunit Repeat Kernel:\n"
                         "  sciunit unlock %s --key <shared-key>"
                         % (rev, rev))
+                try:
+                    sciunit2.security.validate_shared_key(pkgdir, shared_key)
+                except CommandError:
+                    raise CommandError(
+                        "execution %r has an invalid cached unlock key.\n"
+                        "Run this command with the correct shared key, then restart the Sciunit Repeat Kernel:\n"
+                        "  sciunit unlock %s --key <shared-key>"
+                        % (rev, rev))
                 sciunit2.security.restore_execution(pkgdir, shared_key)
             try:
                 de = DetachedExecution(pkgdir)

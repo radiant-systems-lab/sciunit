@@ -162,6 +162,15 @@ def package_requires_unlock(pkgdir):
             and (security_dir / VAULT_NAME).exists())
 
 
+def validate_shared_key(pkgdir, shared_key):
+    pkg_path = Path(pkgdir)
+    vault_path = pkg_path / SECURITY_DIRNAME / VAULT_NAME
+    if not vault_path.exists():
+        return True
+    _decrypt_vault(_read_json(vault_path), shared_key)
+    return True
+
+
 def cache_shared_key(project_root, rev, shared_key):
     cache_path = _key_cache_path(project_root)
     cache_path.parent.mkdir(parents=True, exist_ok=True)

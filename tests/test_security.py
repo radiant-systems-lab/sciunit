@@ -2,6 +2,7 @@ import os
 
 from tests import testit
 import sciunit2.security
+from sciunit2.exceptions import CommandError
 
 
 class TestSecurity(testit.LocalCase):
@@ -129,6 +130,20 @@ class TestSecurity(testit.LocalCase):
         self.assertEqual(1, len(replacements))
         self.assertIn('not-a-secret', redacted)
         self.assertNotIn('"secret"', redacted)
+
+    def test_validate_shared_key_rejects_wrong_key(self):
+        pkgdir = os.path.join('tmp', 'proj', 'cde-package')
+        testit.mkdir(os.path.join(pkgdir, 'cde-root/home/jovyan/work/demo'))
+        target = os.path.join(pkgdir, 'cde-root/home/jovyan/work/demo/app.py')
+        with open(target, 'w') as f:
+            f.write('SMTP_PASSWORD = "very-secret"\n')
+
+        protection = sciunit2.security.protect_execution(pkgdir, 'e1')
+
+        self.assertTrue(sciunit2.security.validate_shared_key(
+            pkgdir, protection['share_key']))
+        with self.assertRaises(CommandError):
+            sciunit2.security.validate_shared_key(pkgdir, 'wrong-key')
 
     def test_key_cache(self):
         project_root = os.path.join('tmp', 'proj')
