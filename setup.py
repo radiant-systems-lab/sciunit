@@ -15,7 +15,6 @@ class BuildCommand(build_py):
     def run(self):
         subprocess.check_call(['cmake', '-DCMAKE_BUILD_TYPE=Release'])
         subprocess.check_call(['make', '-j4'])
-        subprocess.call(['apt-get', 'update'])
         build_py.run(self)
         _build_manpage('docs/sciunit.1.rst', 'sciunit.1.gz')
 
