@@ -9,21 +9,21 @@ set(_FILES_DIR ${CMAKE_SOURCE_DIR}/files)
 
 ExternalProject_Add(
   ptu
-  GIT_REPOSITORY "https://github.com/depaul-dice/provenance-to-use"
+  GIT_REPOSITORY "https://github.com/radiant-systems-lab/provenance-to-use"
   CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DBUILD_TESTING=OFF -DCMAKE_POLICY_VERSION_MINIMUM=3.5
   INSTALL_COMMAND install -s <BINARY_DIR>/ptu ${_LIBEXEC_DIR}
 )
 
 ExternalProject_Add(
   scripter
-  GIT_REPOSITORY "https://github.com/depaul-dice/scripter"
+  GIT_REPOSITORY "https://github.com/radiant-systems-lab/scripter"
   CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_POLICY_VERSION_MINIMUM=3.5
   INSTALL_COMMAND install -s <BINARY_DIR>/scripter ${_LIBEXEC_DIR}
 )
 
 ExternalProject_Add(
   vvpkg
-  GIT_REPOSITORY "https://github.com/depaul-dice/sciunit-dedup"
+  GIT_REPOSITORY "https://github.com/radiant-systems-lab/sciunit-dedup"
   CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_POLICY_VERSION_MINIMUM=3.5
   INSTALL_COMMAND install -s <BINARY_DIR>/demo/vv ${_LIBEXEC_DIR}
   TEST_COMMAND <BINARY_DIR>/tests/run

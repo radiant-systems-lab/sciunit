@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 title: "Sciunits: Reusable Research Objects"
-url: "https://github.com/depaul-dice/sciunit"
+url: "https://github.com/radiant-systems-lab/sciunit"
 preferred-citation:
   type: article
   authors:
@@ -14,6 +14,6 @@ preferred-citation:
   - family-names: "Malik"
     given-names: "Tanu"
   title: "Sciunits: Reusable Research Objects"
-  doi: 10.48550/arXiv.1707.05731
-  url: "https://github.com/depaul-dice/sciunit"
+  doi: 10.1109/eScience.2017.51
+  url: "https://github.com/radiant-systems-lab/sciunit"
 

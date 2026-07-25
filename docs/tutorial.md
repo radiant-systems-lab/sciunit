@@ -1,7 +1,7 @@
 # A Brief Introduction to Sciunit
 
 **This page might have outdated information. The most updated Sciunit documentation can be found at:**
-**https://sciunit.run/docs**
+**https://github.com/radiant-systems-lab/sciunit/wiki**
 
 From time to time, you may find that it is hard to verify or reproduce someone
 else's research, even though it is only programs, data, and output.

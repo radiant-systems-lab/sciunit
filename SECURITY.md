@@ -2,4 +2,4 @@
 
 ## Reporting a Vulnerability
 
-Users can report security vulnerabilities to [sciunit technical support](mailto:pr@sciunit.run)
+Users can report security vulnerabilities to [Sciunit technical support.](mailto:tanu@missouri.edu)

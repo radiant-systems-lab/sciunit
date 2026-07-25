@@ -6,7 +6,7 @@ sciunit
 -------------------------------------------------------------
 deliver reproducibility in your research
 -------------------------------------------------------------
-:Author:    Tanu Malik <tanu.malik@depaul.edu>
+:Author:    Tanu Malik <tanu@missouri.edu>
 :Version:   sciunit2 0.4
 :Manual section: 1
 :Copyright: Copyright 2020-2021, DePaul University
@@ -29,7 +29,7 @@ DESCRIPTION
 ============
 
 **This page might have outdated information. The most updated Sciunit documentation can be found at:**
-**https://sciunit.run**
+**https://github.com/radiant-systems-lab/sciunit/wiki**
 
 A command line utility to create, manage, and share *sciunits*.
 A *sciunit* is a lightweight and portable unit that contains captured,
