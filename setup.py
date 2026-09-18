@@ -16,6 +16,12 @@ class BuildCommand(build_py):
         subprocess.check_call(['cmake', '-DCMAKE_BUILD_TYPE=Release'])
         subprocess.check_call(['make', '-j4'])
         build_py.run(self)
+        libexec_dst = os.path.join(self.build_lib, 'sciunit2', 'libexec')
+        os.makedirs(libexec_dst, exist_ok=True)
+        for binary in ('ptu', 'vv', 'scripter'):
+            src = os.path.join('sciunit2', 'libexec', binary)
+            if os.path.exists(src):
+                self.copy_file(src, os.path.join(libexec_dst, binary))
         _build_manpage('docs/sciunit.1.rst', 'sciunit.1.gz')
 
 
